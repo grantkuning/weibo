@@ -1,6 +1,7 @@
 from selenium import webdriver
 import os
 import time
+import shutil
 
 '''
 A little buggy for now. Also slow as hell, but that's not an immediate problem.
@@ -19,6 +20,8 @@ pw = input('Enter password: ')
 browser = webdriver.Firefox()
 browser.get('http://www.weibo.com/login')
 
+browser.implicitly_wait(10)
+
 username = browser.find_element_by_css_selector('.username > input:nth-child(1)')
 password = browser.find_element_by_css_selector('.password > input:nth-child(1)')
 username.clear()
@@ -27,10 +30,9 @@ password.clear()
 password.send_keys(pw)
 browser.find_element_by_css_selector('div.info_list:nth-child(6) > div:nth-child(1) > a:nth-child(1)').click()
 
-browser.implicitly_wait(10)
 time.sleep(3)
 
-for (top, userdirs, userfiles) in os.walk('/Users/grantkuning/Documents/!save/'):
+for (top, userdirs, userfiles) in os.walk('/Users/grantkuning/Documents/!save/temp/'):
     for user in userdirs:
         for (usertop, tsdirs, tsfiles) in os.walk(top+user):
             for file in tsfiles:
@@ -43,6 +45,11 @@ for (top, userdirs, userfiles) in os.walk('/Users/grantkuning/Documents/!save/')
                     time.sleep(1)
                     if browser.title == '404错误':
                         print(usertop+'/'+file)
-                        print(url)
                         print()
+                        dest = usertop.split('/')
+                        dest[5] = 'perm'
+                        destination = '/'.join(dest)
+                        shutil.move(usertop, destination)
+                    else:
+                        shutil.rmtree(usertop)
 browser.close()
